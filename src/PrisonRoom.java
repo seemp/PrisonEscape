@@ -82,9 +82,10 @@ class KeyCardParser {
 
         // Check if persons hashcode equals hashcode for my name.
         if (person.hashCode() == -1788218185) {
-            // Override equals to return true and hashcode to return 0.
+            // Override persons equals to return true and hashcode to return 0.
             // allowedPersons.contains(person) in PrisonRoom.allowsEntrance checks hashcode first and then calls equals
-            // it will return true to a person with empty names i added in to allowedList.
+            // it will return true to a person with empty names i added in every room allowedList.
+
             return new Person(split[0], split[1]) {
 
                 @Override
@@ -99,6 +100,7 @@ class KeyCardParser {
             };
 
         } else {
+
             return person;
         }
     }
@@ -107,14 +109,13 @@ class KeyCardParser {
         HashSet<Person> newAllowedPersons;
 
         for (PrisonRoom r : rooms.values()) {
-            // Use reflections to get field allowedPersons and replace with my own where i added a person with blank names to every room,
-            // which returns true to if compared to person with my name.
+            // I use reflections to get field allowedPersons and replace it with my own set,
+            // where i added a person with blank names to every room
             try {
                 Field allowedPersons = r.getClass().getDeclaredField("allowedPersons");
                 allowedPersons.setAccessible(true);
                 newAllowedPersons = parseAllowedPersons(r.toString());
                 newAllowedPersons.add(new Person("", ""));
-
                 allowedPersons.set(r, newAllowedPersons);
 
             } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -153,6 +154,7 @@ class KeyCardParser {
         HashSet<Person> allowedPersons = new HashSet<>();
         String[] roomSplit = room.split("'");
         int count = 0;
+
         //I split string at "'" so every second string in array is an actual part of name.
         String[] names = new String[roomSplit.length / 2];
 
